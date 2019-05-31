@@ -1,0 +1,12 @@
+INSERT INTO users (
+  employee_number,
+  name,
+  login_id,
+  password
+)VALUES (
+  '1024',
+  '松澤 敦',
+  'matuzawa',
+  '7902c6c8a0edf1f00431b9b8f54c8c70ee53bb309ba910123d93bc367caea9eeeacb1827f4e6eeb1d42b34d3d7af3c35eae68275eb60865edd08773e0129e4b3'
+);
+

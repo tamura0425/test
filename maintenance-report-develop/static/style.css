@@ -1,0 +1,30 @@
+body {
+  margin: 20px 30px 20px 30px;
+}
+
+h2 {
+  margin-bottom: 30px;
+}
+
+table {
+  margin: 10px 0 0 0;
+}
+
+.header-bg {
+  background-color: #F2F2F2;
+}
+
+.contents-margin {
+  margin-bottom: 20px;
+}
+
+/* ここからhome.htmlのCSS設定 */
+.menu {
+  margin-top: 10px;
+  padding: 0;
+}
+
+.collapse {
+  margin-top: 10px;
+}
+
