@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+	<div class="mx-auto">
+		{% include "header.html" %}
+	</div>
+	<form class="form-horizontal">
+		<div class="menu col-xs-12">
+			<div class="form-inline">
+				<div class="form-group col-md-4">
+					<label class="control-label">日時：</label>
+					<select class="form-control">
+						<option>選択肢1</option>
+						<option>選択肢2</option>
+						<option>選択肢3</option>
+						<option>選択肢4</option>
+						<option>選択肢5</option>
+					</select>
+				</div>
+				<div class="form-group col-md-4">
+					<label class="control-label">顧客名：</label>
+					<select class="form-control">
+						<option>選択肢1</option>
+						<option>選択肢2</option>
+						<option>選択肢3</option>
+						<option>選択肢4</option>
+						<option>選択肢5</option>
+					</select>
+				</div>
+			<div class="col-md-2">
+			<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">表示</button>
+			</div>
+			<div class="col-md-2">
+			<button type="button" class="btn btn-primary">PDF</button>
+			</div>
+				<div class="collapse col-md-12" id="collapseExample">
+					<div class="border p-3">
+						<div class="text-center">
+							<h1>保守実績報告書</h1>
+						</div>
+
+						<!-- 対象システムテーブル -->
+						<table class="table table-responsive">
+							<thead>
+								<tr>
+									<th scope="row">対象システム</th>
+									<td>項目１</td>
+								</tr>
+								<tr>
+									<th scope="row">対象月</th>
+									<td>項目２</td>
+								</tr>
+							</thead>
+						</table>
+
+						<!-- 契約時間テーブル -->
+						<table class="table table-responsive">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">当月</th>
+									<th scope="col">累積</th>
+									<th scope="col">契約時間</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">契約合計時間</th>
+									<td>項目１</td>
+									<td>項目２</td>
+									<td>項目３</td>
+								</tr>
+								<tr>
+									<th scope="row">作業時間合計</th>
+									<td>項目４</td>
+									<td>項目５</td>
+									<td>項目６</td>
+								</tr>
+								<tr>
+									<th scope="row">前年超過時間</th>
+									<td>項目７</td>
+									<td>項目８</td>
+									<td>項目９</td>
+								</tr>
+                                                                <tr>
+                                                                        <th scope="row">時間差異</th>
+                                                                        <td>項目１０</td>
+                                                                        <td>項目１１</td>
+                                                                        <td>項目１２</td>
+                                                                </tr>
+							</tbody>
+						</table>
+
+						<!-- 作業内容テーブル -->
+						<table class="table table-responsive">
+							<thead>
+								<tr>
+									<th scope="col">No</th>
+									<th scope="col">作業内容</th>
+									<th scope="col">対象</th>
+									<th scope="col">作業内容</th>
+									<th scope="col">作業時間</th>
+									<th scope="col">備考</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>項目１</td>
+									<td>項目２</td>
+									<td>項目３</td>
+									<td>項目４</td>
+									<td>項目５</td>
+									<td>項目６</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+{% end %}

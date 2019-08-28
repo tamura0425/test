@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-language" content="ja">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{% block title %}保守報告WEB{% end %}</title>
+    <link rel="stylesheet" href="{{ static_url('./bootstrap-4.3.1-dist/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('./style.css') }}" />
+  </head>
+  <body>
+    <script src="{{ static_url('./jquery-3.3.1.slim.min.js') }}"></script>
+    <script src="{{ static_url('./bootstrap-4.3.1-dist/js/bootstrap.min.js') }}"></script>
+
+    {% block content %}
+    {% end %}
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+          <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> <!--追加部分
+-->
+
+          <!--base挿入-->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+<div class="col-lg-8 col-md-10 col-sm-12 offset-lg-2 offset-md-1">
+      {% include "header.html" %}
+</div>
+</div>
+          <div class="bg-dark text-white">
+<form method="post" action="task">
+       {% module xsrf_form_html() %}
+                        <div class="container">
+                                <div class="text-center">
+
+ <br>
+
+ <br>
+
+
+ <div class="container">
+
+ <div="row justify-content-start">
+
+         <div class="form-row">
+
+                 <div class="col-md-4 mb-4">
+      <label for="validationServer01"><h5>作業日</h5></label><span class="badge badge-danger">必須</span>
+      <input type="DATE" name="date_of" class="form-control is-invalid" id="validationServer01" required>
+      <div class="invalid-feedback">
+        作業日を入力してください
+	      <!--is-invalid-->
+    </div>
+      </div>
+
+    <div class="col-md-4 mb-4">
+      <label for="validationServer02"><h5>案件No.</h5></label><span class="badge badge-danger">必須</span>
+      <input type="number" name="task_no" class="form-control is-invalid" id="validationServer02" required>
+      <div class="invalid-feedback">
+        案件No.を選択してください
+    </div>
+      </div>
+
+    <div class="col-md-4 mb-4">
+      <label for="validationServer03"><h5>作業時間</h5></label><span class="badge badge-danger">必須</span>
+      <input type="number" step="0.1" name="working_time" class="form-control is-invalid" id="validationServer03" placeholder="0.5h" required>
+      <div class="invalid-feedback">
+        作業時間を入力してください
+   </div>
+      </div>
+
+
+                 </div>
+
+                 </div>
+
+
+<div="row justify-content-start">
+                                                <div class="form-row">
+                                                        <div class="col-md-6 mb-6">
+
+                         <label for="task_name"><h5>作業名</h5></label><span class="badge badge-danger">必須</span>
+                                                                <input type="text" id="task_name"  name="task_name" class="form-control is-invalid">
+      <div class="invalid-feedback">
+        作業名を入力してください
+<!--is-invalid-->
+    </div>
+      </div>
+
+    <div class="col-md-6 mb-6">
+      <label for="validationServer02"><h5>作業対象</h5></label><span class="badge badge-danger">必須</span>
+      <input type="text" name="target_system" class="form-control is-invalid" id="validationServer02" required>
+      <div class="invalid-feedback">
+        作業対象を入力してください
+    </div>
+      </div>
+
+
+
+                 </div>
+
+                 </div>
+        <div class="form-row">
+        <p><h4>作業内容</h4> <textarea class="form-control form-control-lg" id="work_detail" name="work_detail" rows="5" cols="10" maxlength="50"></textarea></p><!--作業内容入れる所-->
+ <br>
+ <p><h4>備考</h4> <textarea class="form-control form-control-lg" name="task_remarks" rows="5"cols="10"  maxlength="50"></textarea></p><!--備考入れる所-->
+        </div>
+ <br>
+
+
+<br>
+<div class="text-center">
+<button type="submit" class="btn btn-primary btn-lg">登録</button>
+
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+</div>
+                                </div>
+
+    </form>
+
+              <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> <!--追加部分-->
+
+{% end %}
+

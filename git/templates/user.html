@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="col-lg-8 col-md-10 col-sm-12 offset-lg-2 offset-md-1">
+      {% include "header.html" %}
+      <!--<h2>this is user page.</h2>-->
+      <form id="frmRegist" method="post" action="user">
+        {% module xsrf_form_html() %}
+        <input type="hidden" name="userid" value="{{ item[0] }}">
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="inputEmployeeNumber">社員番号</label>
+            <input type="text" class="form-control" id="inputEmployeeNumber" name="inputEmployeeNumber" value="{{ item[1] }}" autofocus required maxlength="4">
+          </div>
+          <div class="form-group col-md-12">
+            <label for="inputName">氏名</label>
+            <input type="text" class="form-control" id="inputName" name="inputName" value="{{ item[2]  }}" required maxlength="20">
+          </div>
+          <div class="form-group col-md-12">
+            <label for="inputLoginid">ログインID</label>
+            <input type="text" class="form-control" id="inputLoginid" name="inputLoginid" value="{{ item[3] }}" required maxlength="20">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="inputPassword">パスワード</label>
+            <input type="password" class="form-control" id="inputPassword" name="inputPassword" minlength="4">
+          </div>
+          {% if len(item[4]) > 0 %}
+          <div class="form-group col-md-12">
+            <div class="alert alert-danger" role="alert">
+              {{ item[4] }}
+            </div>
+          </div>
+          {% end %}
+          <div class="form-group col-md-6">
+            <label for="inputPasswordConfirm">パスワード（確認）</label>
+            <input type="password" class="form-control" id="inputPasswordConfirm" name="inputPasswordConfirm" minlength="4">
+          </div>
+          {% if item[0] != '0' %}
+          <div class="form-group col-md-6">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="deleteFlag" name="deleteFlag">
+              <label class="form-check-label" for="deleteFlag">削除する</label>
+            </div>
+          </div>
+          {% end %}
+        </div>
+        <button id="btnRegist" type="submit" class="btn btn-primary">設定</button>
+      </form>
+    </div>
+  </div>
+{% end %}

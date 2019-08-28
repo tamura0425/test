@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <div class="col-lg-8 col-md-8 col-sm-12 offset-lg-2 offset-md-2">
+      <h2>{{ system_name }}</h2>
+      <form method="post" action="/">
+        {% module xsrf_form_html() %}
+        <div class="form-group">
+          <label for="inputLoginId">LOGIN ID</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Enter login id" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="inputPassword">Password</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">LOGIN</button>
+        {% if len(msg) > 0 %}
+          <p>
+            <div class="alert alert-danger" role="alert">
+              {{ msg }}
+            </div>
+          </p>
+        {% end %}
+      </form>
+    </div>
+  </div>
+{% end %}
+
