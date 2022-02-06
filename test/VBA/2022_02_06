@@ -43,15 +43,17 @@ Public Sub リスト作成()
     Call データ置換(Lost_Row)
     'Call データ削除試作品3(Lost_Row)
     
+
       
     Call 小文字を大文字に置換
     
     
     Call 重複データ削除
+    
+    Call テスト22
+    'Call 区切った文字数分の行挿入(Lost_Row - 2)
 
-    Call 区切った文字数分の行挿入(Lost_Row - 2)
-
-    Call Dictionary_連想配列_を使った高速VLOOKUP
+    'Call Dictionary_連想配列_を使った高速VLOOKUP
     
     Call 幅を調整
     
@@ -65,62 +67,92 @@ Public Sub リスト作成()
 
 Debug.Print "end"
 
-
 End Sub
-Sub Sample8()
+Public Sub テスト22()
+    Dim startTime As Double
+    Dim endTime As Double
+    'for文用
+    Dim i As Long
+    '最大行
+    Dim mxRow As Long
+    '配列用変数
+    Dim buff As Variant
+    Dim buff2 As Variant
     
-    Dim SearchArray As Variant
-    Dim OutArray()  As Variant
-    Dim KeyItem     As String
-    Dim MaxRow      As Long
-    Dim myDic       As Object
-    Dim Keyval      As String
-    Dim Itemval     As Long
-    Dim i           As Long
-    Dim n           As Long
-     
-
-    'dataシートアクティブ用変数
+    'Counter Listワークシート用
+    Dim cl As Worksheet
+    'Counter Listのデータを配列に挿入
+    Set cl = ThisWorkbook.Worksheets("Counter List")
+    'dateワークシート用
     Dim da As Worksheet
+    'dateのデータを配列に挿入
     Set da = ThisWorkbook.Worksheets("date")
     
-    SearchArray = da.Range(da.Cells(1, 16), da.Cells(MaxRow, 16)) '検索したいデータ範囲
+    Dim Lost_Row_Counter_List As Long
+    'Counter Listの最終行取得
+    Lost_Row_Counter_List = Worksheets("Counter List").Cells(2, 1).End(xlDown).Row
     
-    Set myDic = CreateObject("Scripting.Dictionary") 'Dictionary
+    '★辞書の宣言
+    Dim dictUser As Dictionary
+    Set dictUser = New Dictionary
     
-    
-    For i = 1 To UBound(SearchArray) '配列ループ
-    
-        Keyval = SearchArray(i, 1) 'Key格納
-        Itemval = i + 1 'Item(行数)格納
-        
-        If Not myDic.Exists(Keyval) Then 'Dictionary格納
-            
-            myDic.Add Keyval, Itemval
-        
-        Else
-        
-            myDic(Keyval) = myDic(Keyval) & "/" & Itemval '登録済みの場合は行数をItemに連結する
-        
+    '★辞書の準備 Counter Listシートのデータ取得
+    For i = 2 To Lost_Row_Counter_List
+        If dictUser.Exists(cl.Cells(i, 1).Value) = False Then
+            dictUser.Add Key:=cl.Cells(i, 1).Value, Item:=cl.Cells(i, 9).Value
         End If
+    Next
         
-    Next i
+    Dim n       As Long
+    Dim MaxRow  As Long
+    Dim myStr   As String
+    Dim temp    As Variant
+    Dim AddRow  As Long
+
+    With da
+        '▼Noの最終行を取得
+        mxRow = .Cells(1, 16).End(xlDown).Row
+
+        '▼セル参照回数を減らす為に配列へ格納
+        buff = .Range(.Cells(1, 16), .Cells(mxRow, 16))
+        
+        '繰返し処理開始
+        '行を挿入する場合は下から
+        For i = mxRow To 1 Step -1
+            '分解したいセルを指定する
+            myStr = da.Cells(i, 16)
+            
+            ',で区切って変数に格納する
+            temp = Split(myStr, vbLf)
+            
+            '区切った要素数を取得する
+            AddRow = UBound(temp)
+            
+            '行挿入の際に要素数0だとエラーになるので判定する
+            If AddRow > 0 Then
+                '要素数分行挿入する
+                da.Range("A" & i + 1).Resize(AddRow).EntireRow.Insert
+            End If
     
-    
-    temp = Split(myDic(KeyItem), "/") 'Itemを"/"で分解する
-    
-    For i = 0 To UBound(temp)
-    
-        MsgStr = MsgStr & temp(i) & "行目" & vbCrLf '要素数分文字列に格納
-    
-    Next i
-    
-    
-    
-    
-    
-    Range(Cells(2, 2), Cells(10001, 2)) = OutArray '配列を出力
-    
+            '要素数分ループして基準となる項目を反映して、区切った文字列を入力する
+            For n = 0 To AddRow
+                Debug.Print temp(n)
+                'da.Cells(i + n, 16) = temp(n)
+                .Cells(i + n, 17) = dictUser.Item(CStr(temp(n)))
+                'buff(i, 1) = dictUser.Item(CStr(temp(n)))
+
+            Next n
+            
+            '★Dictionaryを使う
+            'buff(i, 1) = dictUser.Item(CStr(buff(i, 1)))
+        Next
+        
+        '▼配列からまとめて入力
+        '.Range(.Cells(1, 17), .Cells(mxRow, 17)) = buff
+
+    End With
+    Set dictUser = Nothing
+     
 End Sub
 
 
@@ -336,6 +368,8 @@ MaxRow = Lost_Row
         '区切った要素数を取得する
         AddRow = UBound(temp)
         
+        Debug.Print AddRow
+        
         '行挿入の際に要素数0だとエラーになるので判定する
         If AddRow > 0 Then
             '要素数分行挿入する
@@ -344,7 +378,11 @@ MaxRow = Lost_Row
          
         '要素数分ループして基準となる項目を反映して、区切った文字列を入力する
         For n = 0 To AddRow
-            da.Cells(i + n, 16) = Cells(i, 1)
+            
+            'A列のデータをコピー
+            'da.Cells(i + n, 1) = da.Cells(i, 1)
+            
+            '分割したデータを入力
             da.Cells(i + n, 16) = temp(n)
         Next n
     Next i
@@ -450,7 +488,6 @@ Public Sub 小文字を大文字に置換()
             da.Cells(i, 16) = StrConv(moji, vbUpperCase)
     Next
 End Sub
-
 Public Sub Dictionary_連想配列_を使った高速VLOOKUP()
     Dim startTime As Double
     Dim endTime As Double
@@ -491,7 +528,6 @@ Public Sub Dictionary_連想配列_を使った高速VLOOKUP()
         For i = 1 To mxRow
             '★Dictionaryを使う
             buff(i, 1) = dictUser.Item(CStr(buff(i, 1)))
-             
         Next
 
         '▼配列からまとめて入力
