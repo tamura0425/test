@@ -1,0 +1,504 @@
+Option Explicit
+Public Sub リスト作成()
+    Dim Lost_Row As Long
+    Dim TempData
+    Dim ws As Worksheet
+    ' 現在アクティブなシートを取得
+    Dim sheet As Worksheet
+    Set sheet = ActiveSheet
+    
+    Debug.Print "start"
+    
+    '▼画面更新を無効化
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    
+    'シートがあるかどうか調べて、ある場合はそのシートを削除
+    Delete_sheet
+    'dateシート作成
+    Worksheets.Add After:=Worksheets(Worksheets.COUNT)
+    ActiveSheet.Name = "date"
+    sheet.Activate
+    
+    'Masterシートアクティブ用変数
+    Set ws = ThisWorkbook.Worksheets("Master")
+    'Set kp = ThisWorkbook.Worksheets("KDDI_KPIList")
+    
+    'dataシートアクティブ用変数
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+    
+    '最終行を所得
+    Lost_Row = Worksheets("Master").Cells(3, 1).End(xlDown).Row
+
+    'コピー用データ取得
+    TempData = ws.Range(ws.Cells(3, 1), ws.Cells(Lost_Row, 15)).Value
+    da.Range(da.Cells(1, 1), da.Cells((Lost_Row - 2), 15)).Value = TempData
+    
+    
+'    kp.Range(kp.Cells(2, 1), kp.Cells((Lost_Row - 1), 15)).Value = TempData
+  'データ削除試作品
+  
+
+    Call データ置換(Lost_Row)
+    'Call データ削除試作品3(Lost_Row)
+    
+      
+    Call 小文字を大文字に置換
+    
+    
+    Call 重複データ削除
+
+    Call 区切った文字数分の行挿入(Lost_Row - 2)
+
+    Call Dictionary_連想配列_を使った高速VLOOKUP
+    
+    Call 幅を調整
+    
+
+'Application.DisplayAlerts = False ' メッセージを非表示
+'Sheets("date").Delete ' シート「データ」を削除
+
+    '▼画面更新を有効化
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+
+Debug.Print "end"
+
+
+End Sub
+Sub Sample8()
+    
+    Dim SearchArray As Variant
+    Dim OutArray()  As Variant
+    Dim KeyItem     As String
+    Dim MaxRow      As Long
+    Dim myDic       As Object
+    Dim Keyval      As String
+    Dim Itemval     As Long
+    Dim i           As Long
+    Dim n           As Long
+     
+
+    'dataシートアクティブ用変数
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+    
+    SearchArray = da.Range(da.Cells(1, 16), da.Cells(MaxRow, 16)) '検索したいデータ範囲
+    
+    Set myDic = CreateObject("Scripting.Dictionary") 'Dictionary
+    
+    
+    For i = 1 To UBound(SearchArray) '配列ループ
+    
+        Keyval = SearchArray(i, 1) 'Key格納
+        Itemval = i + 1 'Item(行数)格納
+        
+        If Not myDic.Exists(Keyval) Then 'Dictionary格納
+            
+            myDic.Add Keyval, Itemval
+        
+        Else
+        
+            myDic(Keyval) = myDic(Keyval) & "/" & Itemval '登録済みの場合は行数をItemに連結する
+        
+        End If
+        
+    Next i
+    
+    
+    temp = Split(myDic(KeyItem), "/") 'Itemを"/"で分解する
+    
+    For i = 0 To UBound(temp)
+    
+        MsgStr = MsgStr & temp(i) & "行目" & vbCrLf '要素数分文字列に格納
+    
+    Next i
+    
+    
+    
+    
+    
+    Range(Cells(2, 2), Cells(10001, 2)) = OutArray '配列を出力
+    
+End Sub
+
+
+Public Sub 重複データ削除()
+    Dim myCell As Range, targetRange As Range
+    Dim buf As Variant
+    Dim i As Long
+    Dim myDic As Object
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+    
+    With ActiveSheet
+    
+    Set targetRange = da.Range(da.Range("P1"), da.Range("P" & .Rows.COUNT).End(xlUp))
+    End With
+    
+    Set myDic = CreateObject("Scripting.Dictionary")
+    For Each myCell In targetRange.Cells
+        buf = Split(myCell.Value, vbLf)
+        
+        For i = LBound(buf) To UBound(buf)
+            If Not myDic.Exists(buf(i)) Then myDic.Add buf(i), ""
+        Next i
+        
+        myCell.Offset(0, 0).Value = Join(myDic.Keys, vbLf)
+        myDic.RemoveAll
+    Next myCell
+    
+    Set myDic = Nothing
+
+End Sub
+
+'データ置換
+Public Sub データ置換(Lost_Row As Long)
+    Dim da As Worksheet
+    Dim i As Long
+    Dim x As Long
+    Dim COUNT As Long
+    Dim myArray As Variant
+    
+
+    COUNT = Lost_Row - 2
+    
+    Set da = ThisWorkbook.Worksheets("date")
+    myArray = da.Range(da.Cells(1, 15), da.Cells(COUNT, 15))
+       
+    '正規表現の指定1
+    Dim Calendar As Object
+    Set Calendar = CreateObject("VBScript.RegExp")
+    
+    With Calendar
+        .Pattern = "\d{4}/\d{2}/\d{2}"  'パターンを指定
+        .Global = True      '文字列全体を検索するか(True)、しないか(False)
+        .IgnoreCase = True '大文字と小文字を区別するか(False)、しないか(True)
+    End With
+    
+    '正規表現の指定2
+    Dim Sum As Object
+    Set Sum = CreateObject("VBScript.RegExp")
+    
+    With Sum
+        .Pattern = "sum"  'パターンを指定
+        .Global = True      '文字列全体を検索するか(True)、しないか(False)
+        .IgnoreCase = True '大文字と小文字を区別するか(False)、しないか(True)
+    End With
+
+    '正規表現の指定3
+    Dim Meta As Object
+    Set Meta = CreateObject("VBScript.RegExp")
+    Dim str As String
+    
+    str = "[-/\^\$\?\*\+\.\|\{\}\\\[\]\(\)]"
+    With Meta
+        .Pattern = str 'パターンを指定
+        .Global = True      '文字列全体を検索するか(True)、しないか(False)
+        .IgnoreCase = True '大文字と小文字を区別するか(False)、しないか(True)
+    End With
+    
+    'セル内の改行を削除
+    Dim kara As Object
+    Set kara = CreateObject("VBScript.RegExp")
+    
+    With kara
+        .Global = True
+        .Pattern = "^\n+|\n+$|\n+(?=\n)"
+        'VBA100_16_02 = .Replace(Replace(arg, vbCrLf, vbLf), "")
+    End With
+    
+    'MR_を含む列を全て削除
+    Dim MR_ As Object
+    Set MR_ = CreateObject("VBScript.RegExp")
+    
+    With MR_
+        .Global = True
+        .Pattern = "NR_.*"
+    End With
+    
+    '5GSAを含む列を全て削除
+    Dim SA As Object
+    Set SA = CreateObject("VBScript.RegExp")
+    
+    With SA
+        .Global = True
+        .Pattern = "5GSA.*"
+    End With
+    
+        '5GSAを含む列を全て削除
+    Dim gNB As Object
+    Set gNB = CreateObject("VBScript.RegExp")
+    
+    With gNB
+        .Global = True
+        .Pattern = "gNB.*"
+    End With
+    
+    'freqを含む列を全て削除
+    Dim freq As Object
+    Set freq = CreateObject("VBScript.RegExp")
+    
+    With freq
+        .Global = True
+        .Pattern = "freq.*"
+    End With
+    
+    'M5を含む列を全て削除
+    Dim M5 As Object
+    Set M5 = CreateObject("VBScript.RegExp")
+    
+    With M5
+        .Global = True
+        .Pattern = "M5.*"
+    End With
+    
+    'DUhを含む列を全て削除
+    Dim DUh As Object
+    Set DUh = CreateObject("VBScript.RegExp")
+    
+    With DUh
+        .Global = True
+        .Pattern = "DUh.*"
+    End With
+    
+    'Kbyteを含む列を全て削除
+    Dim Kbyte As Object
+    Set Kbyte = CreateObject("VBScript.RegExp")
+    
+    With Kbyte
+        .Global = True
+        .Pattern = "Kbyte.*"
+    End With
+    
+        
+    'Numberを含む列を全て削除
+    Dim Number As Object
+    Set Number = CreateObject("VBScript.RegExp")
+    
+    With Number
+        .Global = True
+        .Pattern = vbLf + "\d{1,4}"
+    End With
+    
+    
+    
+    For i = LBound(myArray) To UBound(myArray)
+        myArray(i, 1) = Replace(myArray(i, 1), "100", vbLf)
+        myArray(i, 1) = Calendar.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = Sum.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = Meta.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = Replace(myArray(i, 1), " ", "")
+        myArray(i, 1) = Replace(myArray(i, 1), "vbCrLf", "vbLf")
+        myArray(i, 1) = MR_.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = SA.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = gNB.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = freq.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = M5.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = DUh.Replace(myArray(i, 1), vbLf)
+        myArray(i, 1) = Kbyte.Replace(myArray(i, 1), vbLf)
+        
+myArray(i, 1) = Number.Replace(myArray(i, 1), vbLf)
+     
+        'セル内の改行を削除
+        myArray(i, 1) = kara.Replace(Replace(myArray(i, 1), vbCrLf, vbLf), "")
+        
+    Next i
+    
+    da.Range(da.Cells(1, 16), da.Cells(COUNT, 16)) = myArray
+ 
+End Sub
+'Excel VBA 区切った文字数分の行挿入して一覧を作成する
+
+Public Sub 区切った文字数分の行挿入(Lost_Row As Long)
+Dim i       As Long
+Dim n       As Long
+Dim MaxRow  As Long
+Dim myStr   As String
+Dim temp    As Variant
+Dim AddRow  As Long
+
+Dim da As Worksheet
+Set da = ThisWorkbook.Worksheets("date")
+
+MaxRow = Lost_Row
+
+'行を挿入する場合は下から
+    For i = MaxRow To 1 Step -1
+    
+        '分解したいセルを指定する
+        myStr = da.Cells(i, 16)
+        
+        ',で区切って変数に格納する
+        temp = Split(myStr, vbLf)
+        
+        '区切った要素数を取得する
+        AddRow = UBound(temp)
+        
+        '行挿入の際に要素数0だとエラーになるので判定する
+        If AddRow > 0 Then
+            '要素数分行挿入する
+            da.Range("A" & i + 1).Resize(AddRow).EntireRow.Insert
+        End If
+         
+        '要素数分ループして基準となる項目を反映して、区切った文字列を入力する
+        For n = 0 To AddRow
+            da.Cells(i + n, 16) = Cells(i, 1)
+            da.Cells(i + n, 16) = temp(n)
+        Next n
+    Next i
+
+End Sub
+
+'重複データ削除
+'Public Sub OutputDictionary()
+Public Sub 重複データ削除1(ByRef myArray() As String, COUNT As Long)
+    Dim i As Long
+    Dim j As Long
+    Dim MaxRow  As Long
+    Dim strMat As Variant
+    Dim lngNum As Variant
+    Dim dic As Dictionary
+    
+    Set dic = New Dictionary
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+        
+    With ActiveSheet
+            MaxRow = .Cells(Rows.COUNT, 2).End(xlUp).Row
+            
+    For i = 2 To MaxRow
+            strMat = .Cells(i, 2).Value
+
+            If dic.Exists(strMat) = False Then
+                dic.Add strMat, lngNum
+            End If
+        Next i
+        
+        For j = 0 To dic.COUNT - 1
+            .Cells(j + 2, 6).Value = dic.Keys(j)
+          
+        Next j
+    End With
+    
+    da.Range(da.Cells(1, 16), da.Cells(COUNT, 16)) = myArray
+
+End Sub
+
+'シートがあるかどうか調べて、ある場合はそのシートを削除
+Public Sub Delete_sheet()
+    Dim ws As Worksheet
+    Dim flag As Boolean
+    
+    For Each ws In Worksheets
+        If ws.Name = "date" Then flag = True
+    Next ws
+    If flag = True Then
+        Application.DisplayAlerts = False
+        Worksheets("date").Delete
+        Application.DisplayAlerts = True
+    
+    End If
+End Sub
+'O列の幅を調整
+Public Sub 幅を調整()
+    With Worksheets("date").Columns("O")
+        .EntireColumn.ColumnWidth = 40
+    End With
+    
+    With Worksheets("date").Columns("P")
+        .AutoFit
+    End With
+        With Worksheets("date").Columns("Q")
+        .AutoFit
+    End With
+    
+End Sub
+'空白行を削除し詰める
+Public Sub CommandButton1_Click()
+    Dim i As Long
+    Dim toprow As Long
+    Dim bottomrow As Long
+    
+    '開始する行
+    toprow = 8
+    '終了する行
+    bottomrow = 30
+    
+    For i = bottomrow To toprow Step -1
+        If ActiveSheet.Cells(i, 1) = "" Then
+            'A列が空白なら行削除
+            Application.Rows(i).Delete
+        End If
+    Next
+End Sub
+
+Public Sub 小文字を大文字に置換()
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+    
+   '最終行を所得
+    Dim COUNT As Long
+    Dim i As Long
+    
+    COUNT = Worksheets("date").Cells(1, 16).End(xlDown).Row
+    
+    Dim moji As String
+    For i = 1 To COUNT
+            moji = da.Cells(i, 16)
+            da.Cells(i, 16) = StrConv(moji, vbUpperCase)
+    Next
+End Sub
+
+Public Sub Dictionary_連想配列_を使った高速VLOOKUP()
+    Dim startTime As Double
+    Dim endTime As Double
+    Dim i As Long 'for文用
+    Dim mxRow As Long '最大行
+    Dim buff As Variant
+    Dim cl As Worksheet
+    Dim da As Worksheet
+    Set da = ThisWorkbook.Worksheets("date")
+    
+    Dim Lost_Row_Counter_List As Long
+    'Counter Listの最終行取得
+    Lost_Row_Counter_List = Worksheets("Counter List").Cells(2, 1).End(xlDown).Row
+    
+    'Counter Listのデータを配列に挿入
+    Set cl = ThisWorkbook.Worksheets("Counter List")
+    
+    '★辞書の宣言
+    Dim dictUser As Dictionary
+    Set dictUser = New Dictionary
+    
+    '★辞書の準備
+    For i = 2 To Lost_Row_Counter_List
+        If dictUser.Exists(cl.Cells(i, 1).Value) = False Then
+            dictUser.Add Key:=cl.Cells(i, 1).Value, Item:=cl.Cells(i, 9).Value
+        End If
+    Next
+
+    With da
+        '▼Noの最終行を取得
+        mxRow = .Cells(1, 16).End(xlDown).Row
+
+        '▼セル参照回数を減らす為に配列へ格納
+        buff = .Range(.Cells(1, 16), .Cells(mxRow, 16))
+   
+        '繰返し処理開始
+
+        For i = 1 To mxRow
+            '★Dictionaryを使う
+            buff(i, 1) = dictUser.Item(CStr(buff(i, 1)))
+             
+        Next
+
+        '▼配列からまとめて入力
+        .Range(.Cells(1, 17), .Cells(mxRow, 17)) = buff
+
+    End With
+    Set dictUser = Nothing
+     
+End Sub
+
