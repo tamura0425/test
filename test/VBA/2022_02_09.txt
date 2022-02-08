@@ -34,33 +34,23 @@ Public Sub リスト作成()
     'コピー用データ取得
     TempData = ws.Range(ws.Cells(3, 1), ws.Cells(Lost_Row, 15)).Value
     da.Range(da.Cells(1, 1), da.Cells((Lost_Row - 2), 15)).Value = TempData
-    
-    
+       
 '    kp.Range(kp.Cells(2, 1), kp.Cells((Lost_Row - 1), 15)).Value = TempData
-  'データ削除試作品
-  
+ 
 
     Call データ置換(Lost_Row)
-    'Call データ削除試作品3(Lost_Row)
     
-
-      
     Call 小文字を大文字に置換
-    
     
     Call 重複データ削除
     
-    'Call テスト22
-    
-    Call test555
-    'Call 区切った文字数分の行挿入(Lost_Row - 2)
-
-    'Call Dictionary_連想配列_を使った高速VLOOKUP
+    Call 検索と行挿入
     
     Call 列を削除する
     
     Call 幅を調整
     
+    'Call sample
 
 'Application.DisplayAlerts = False ' メッセージを非表示
 'Sheets("date").Delete ' シート「データ」を削除
@@ -72,155 +62,112 @@ Public Sub リスト作成()
 Debug.Print "end"
 
 End Sub
- Sub test555()
+
+
+Public Sub chrMerge()
+
+    Dim rngSel As Range, rng As Range
+
+    If TypeName(Selection) <> "Range" Then Exit Sub 'エラー処理
+
+    Set rngSel = Selection
+
+    For Each rng In rngSel
+        If rng.Text <> "" Then
+            Do While rng.Offset(1, 0).Text = ""
+                If Intersect(rng.Offset(1, 0), rngSel) Is Nothing Then Exit Do
+                Range(rng, rng.Offset(1, 0)).Merge
+            Loop
+        End If
+    Next
+
+    Set rngSel = Nothing
+
+End Sub
+Public Sub 検索と行挿入()
+    'ワークシート用変数
      Dim clWs     As Worksheet
      Dim daWs     As Worksheet
+     '連想配列用変数
      Dim dictUser As Dictionary
+      '最終行代入変数
      Dim mxRow    As Long
+     '代入用変数
      Dim myStr    As String
+      '配列用変数
      Dim temp     As Variant
+     'Counter List最終行
      Dim lastRow   As Long
+     'ループ用変数
      Dim i        As Long
      Dim n        As Long
+     '判定用
      Dim cnt      As Long
+     ' For Each用変数
      Dim e        As Variant
+      
+     'ワークシート操作作業
      Set clWs = ThisWorkbook.Worksheets("Counter List")
      Set daWs = ThisWorkbook.Worksheets("date")
+      
+     'Counter Listの最終行取得
      lastRow = clWs.Cells(2, 1).End(xlDown).Row
+      
+     '辞書の宣言
      Set dictUser = New Dictionary
+     
+     '辞書型配列作成
      For i = 2 To lastRow
+        'Dictionaryに格納されたペアのキーに一致する値が存在するか否かをBoolean(True/False)で返すメソッド
          If dictUser.Exists(clWs.Cells(i, 1).Value) = False Then
-             dictUser(clWs.Cells(i, 1).Value) = clWs.Cells(i, 9).Value
+            
+            dictUser(clWs.Cells(i, 1).Value) = clWs.Cells(i, 9).Value
          End If
      Next
+     
      With daWs
+        'dateの最終行取得
          mxRow = .Cells(1, 16).End(xlDown).Row
+         
+         '繰返し処理開始
+        '行を挿入する場合は下から
          For i = mxRow To 1 Step -1
+            '分解したいセルを指定する
              myStr = daWs.Cells(i, 16)
-             temp = Split(myStr, vbLf)
-             cnt = 0
              
+             '改行で区切って配列に格納する
+             temp = Split(myStr, vbLf)
+             
+             
+             cnt = 0
              For Each e In temp
+             'データがDictionaryオブジェクトにキー存在いていればcntをプラス1
                  If dictUser.Exists(e) Then cnt = cnt + 1
              Next
              
+             'Dictionaryオブジェクト分の行を挿入
+             '.EntireRow.Insert＝「Range(セル名).EntireRow」で指定したセルの行数を取得してから、行を挿入
              If cnt > 1 Then
                  daWs.Range("A" & i + 1).Resize(cnt - 1).EntireRow.Insert
              End If
              
              n = 0
+             
              For Each e In temp
                  If dictUser.Exists(e) Then
-                     .Cells(i + n, 17) = dictUser(e)
-                     .Cells(i + n, 18) = e
+                     .Cells(i + n, 18) = dictUser(e)
+                     .Cells(i + n, 17) = e
                      n = n + 1
                  End If
              Next
+             
+            
+             
          Next i
      End With
+     
      Set dictUser = Nothing
  End Sub
-
-Public Sub テスト22()
-    'for文使用変数
-    Dim i As Long
-    Dim n As Long
-    
-    '最大行代入変数
-    Dim mxRow As Long
-    
-    '代入用変数
-    Dim myStr   As String
-    
-    '配列用変数
-    Dim temp    As Variant
-    '配列用変数
-    Dim AddRow  As Long
-
-
-    
-    'Counter Listワークシート用変数
-    Dim cl As Worksheet
-    'Counter Listのデータを配列に挿入
-    Set cl = ThisWorkbook.Worksheets("Counter List")
-    
-    'dateワークシート用変数
-    Dim da As Worksheet
-    'dateのデータを配列に挿入
-    Set da = ThisWorkbook.Worksheets("date")
-      
-    'Counter Listの最終行取得変数
-    Dim Lost_Row_Counter_List As Long
-    'Counter Listの最終行取得
-    Lost_Row_Counter_List = Worksheets("Counter List").Cells(2, 1).End(xlDown).Row
-    
-    '辞書の宣言
-    Dim dictUser As Dictionary
-    Set dictUser = New Dictionary
-    
-    '辞書の準備 Counter Listシートのデータ取得
-    For i = 2 To Lost_Row_Counter_List
-        If dictUser.Exists(cl.Cells(i, 1).Value) = False Then
-            dictUser.Add Key:=cl.Cells(i, 1).Value, Item:=cl.Cells(i, 9).Value
-        End If
-    Next
-        
-
-
-    With da
-        '最終行を取得
-        mxRow = .Cells(1, 16).End(xlDown).Row
-
-        '繰返し処理開始
-        '行を挿入する場合は下から
-        For i = mxRow To 1 Step -1
-            '分解したいセルを指定する
-            myStr = da.Cells(i, 16)
-            
-            '改行で区切って配列に格納する
-            temp = Split(myStr, vbLf)
-            
-            '区切った要素数を取得する
-            AddRow = UBound(temp)
-            
-            '行挿入の際に要素数0だとエラーになるので判定する
-            If AddRow > 0 Then
-                '要素数分行挿入する
-                da.Range("A" & i + 1).Resize(AddRow).EntireRow.Insert
-            End If
-    
-            '要素数分ループして基準となる項目を反映し改行で区切った文字列を入力する
-            For n = 0 To AddRow
-               Debug.Print temp(n)
-               
-               .Cells(i + n, 17) = dictUser.Item(CStr(temp(n)))
-                
-                If .Cells(i + n, 17).Value = "" Or Len(.Cells(i + n, 17).Value) = 0 Then
-                    
-                    .Cells(i + n, 17).Delete (xlShiftUp)
-                    .Cells(i + n, 18).Delete (xlShiftUp)
-
-                ElseIf .Cells(i + n, 17).Value <> "" Or Len(.Cells(i + n, 17).Value) > 0 Then
-
-                    .Cells(i + n, 18) = CStr(temp(n))
-                End If
-'
-'                .Cells(i + n, 17) = dictUser.Item(CStr(temp(n)))
-'
-'                '.Cells(i + n, 18) = CStr(temp(n))
-'                .Cells(i + n, 18) = temp(n)
-'                '.Cells(i + n, 18) = dictUser.Key(CStr(temp(n)))
-
-            Next n
-
-        Next i
-
-    End With
-    Set dictUser = Nothing
-     
-End Sub
-
-
 Public Sub 重複データ削除()
     Dim myCell As Range, targetRange As Range
     Dim buf As Variant
@@ -257,8 +204,6 @@ Public Sub データ置換(Lost_Row As Long)
     Dim x As Long
     Dim COUNT As Long
     Dim myArray As Variant
-    
-
     COUNT = Lost_Row - 2
     
     Set da = ThisWorkbook.Worksheets("date")
@@ -369,16 +314,9 @@ Public Sub データ置換(Lost_Row As Long)
         .Pattern = "Kbyte.*"
     End With
     
-        
     'Numberを含む列を全て削除
     Dim Number As Object
     Set Number = CreateObject("VBScript.RegExp")
-    
-    With Number
-        .Global = True
-        .Pattern = vbLf + "\d{1,4}"
-    End With
-    
     
     
     For i = LBound(myArray) To UBound(myArray)
@@ -395,100 +333,15 @@ Public Sub データ置換(Lost_Row As Long)
         myArray(i, 1) = M5.Replace(myArray(i, 1), vbLf)
         myArray(i, 1) = DUh.Replace(myArray(i, 1), vbLf)
         myArray(i, 1) = Kbyte.Replace(myArray(i, 1), vbLf)
-        
-myArray(i, 1) = Number.Replace(myArray(i, 1), vbLf)
      
         'セル内の改行を削除
         myArray(i, 1) = kara.Replace(Replace(myArray(i, 1), vbCrLf, vbLf), "")
-        
     Next i
     
     da.Range(da.Cells(1, 16), da.Cells(COUNT, 16)) = myArray
  
 End Sub
 'Excel VBA 区切った文字数分の行挿入して一覧を作成する
-
-Public Sub 区切った文字数分の行挿入(Lost_Row As Long)
-Dim i       As Long
-Dim n       As Long
-Dim MaxRow  As Long
-Dim myStr   As String
-Dim temp    As Variant
-Dim AddRow  As Long
-
-Dim da As Worksheet
-Set da = ThisWorkbook.Worksheets("date")
-
-MaxRow = Lost_Row
-
-'行を挿入する場合は下から
-    For i = MaxRow To 1 Step -1
-    
-        '分解したいセルを指定する
-        myStr = da.Cells(i, 16)
-        
-        ',で区切って変数に格納する
-        temp = Split(myStr, vbLf)
-        
-        '区切った要素数を取得する
-        AddRow = UBound(temp)
-        
-        Debug.Print AddRow
-        
-        '行挿入の際に要素数0だとエラーになるので判定する
-        If AddRow > 0 Then
-            '要素数分行挿入する
-            da.Range("A" & i + 1).Resize(AddRow).EntireRow.Insert
-        End If
-         
-        '要素数分ループして基準となる項目を反映して、区切った文字列を入力する
-        For n = 0 To AddRow
-            
-            'A列のデータをコピー
-            'da.Cells(i + n, 1) = da.Cells(i, 1)
-            
-            '分割したデータを入力
-            da.Cells(i + n, 16) = temp(n)
-        Next n
-    Next i
-
-End Sub
-
-'重複データ削除
-'Public Sub OutputDictionary()
-Public Sub 重複データ削除1(ByRef myArray() As String, COUNT As Long)
-    Dim i As Long
-    Dim j As Long
-    Dim MaxRow  As Long
-    Dim strMat As Variant
-    Dim lngNum As Variant
-    Dim dic As Dictionary
-    
-    Set dic = New Dictionary
-    Dim da As Worksheet
-    Set da = ThisWorkbook.Worksheets("date")
-        
-    With ActiveSheet
-            MaxRow = .Cells(Rows.COUNT, 2).End(xlUp).Row
-            
-    For i = 2 To MaxRow
-            strMat = .Cells(i, 2).Value
-
-            If dic.Exists(strMat) = False Then
-                dic.Add strMat, lngNum
-            End If
-        Next i
-        
-        For j = 0 To dic.COUNT - 1
-            .Cells(j + 2, 6).Value = dic.Keys(j)
-          
-        Next j
-    End With
-    
-    da.Range(da.Cells(1, 16), da.Cells(COUNT, 16)) = myArray
-
-End Sub
-
 'シートがあるかどうか調べて、ある場合はそのシートを削除
 Public Sub Delete_sheet()
     Dim ws As Worksheet
@@ -554,55 +407,6 @@ Public Sub 小文字を大文字に置換()
             da.Cells(i, 16) = StrConv(moji, vbUpperCase)
     Next
 End Sub
-Public Sub Dictionary_連想配列_を使った高速VLOOKUP()
-    Dim startTime As Double
-    Dim endTime As Double
-    Dim i As Long 'for文用
-    Dim mxRow As Long '最大行
-    Dim buff As Variant
-    Dim cl As Worksheet
-    Dim da As Worksheet
-    Set da = ThisWorkbook.Worksheets("date")
-    
-    Dim Lost_Row_Counter_List As Long
-    'Counter Listの最終行取得
-    Lost_Row_Counter_List = Worksheets("Counter List").Cells(2, 1).End(xlDown).Row
-    
-    'Counter Listのデータを配列に挿入
-    Set cl = ThisWorkbook.Worksheets("Counter List")
-    
-    '★辞書の宣言
-    Dim dictUser As Dictionary
-    Set dictUser = New Dictionary
-    
-    '★辞書の準備
-    For i = 2 To Lost_Row_Counter_List
-        If dictUser.Exists(cl.Cells(i, 1).Value) = False Then
-            dictUser.Add Key:=cl.Cells(i, 1).Value, Item:=cl.Cells(i, 9).Value
-        End If
-    Next
-
-    With da
-        '▼Noの最終行を取得
-        mxRow = .Cells(1, 16).End(xlDown).Row
-
-        '▼セル参照回数を減らす為に配列へ格納
-        buff = .Range(.Cells(1, 16), .Cells(mxRow, 16))
-   
-        '繰返し処理開始
-
-        For i = 1 To mxRow
-            '★Dictionaryを使う
-            buff(i, 1) = dictUser.Item(CStr(buff(i, 1)))
-        Next
-
-        '▼配列からまとめて入力
-        .Range(.Cells(1, 17), .Cells(mxRow, 17)) = buff
-
-    End With
-    Set dictUser = Nothing
-     
-End Sub
 
 
 Public Sub 列を削除する()
@@ -612,4 +416,6 @@ Public Sub 列を削除する()
     da.Range("P:P").Delete
     
 End Sub
+
+
 
