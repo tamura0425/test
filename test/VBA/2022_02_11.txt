@@ -1,6 +1,8 @@
 Option Explicit
 Public Sub リスト作成()
     Dim Lost_Row As Long
+    Dim flag As Long
+    
     Dim TempData
     Dim ws As Worksheet
     ' 現在アクティブなシートを取得
@@ -30,14 +32,20 @@ Public Sub リスト作成()
     
     '最終行を所得
     Lost_Row = Worksheets("Master").Cells(3, 1).End(xlDown).Row
-
+    
     'コピー用データ取得
     TempData = ws.Range(ws.Cells(3, 1), ws.Cells(Lost_Row, 15)).Value
     da.Range(da.Cells(1, 1), da.Cells((Lost_Row - 2), 15)).Value = TempData
        
-'    kp.Range(kp.Cells(2, 1), kp.Cells((Lost_Row - 1), 15)).Value = TempData
- 
-
+    '    kp.Range(kp.Cells(2, 1), kp.Cells((Lost_Row - 1), 15)).Value = TempData
+    
+     Dim startTime As Double
+     Dim endTime As Double
+     Dim processTime As Double
+     Dim i As Long
+    
+    '開始時間取得
+    startTime = Timer
     Call データ置換(Lost_Row)
     
     Call 小文字を大文字に置換
@@ -46,43 +54,107 @@ Public Sub リスト作成()
     
     Call 検索と行挿入
     
-    'Call 列を削除する
-    Call 空白確認
-    
+    flag = Function_空白確認()
+    Call 列を削除する
+        
     Call 幅を調整
     
-    'セル結合
-'Application.DisplayAlerts = False ' メッセージを非表示
-'Sheets("date").Delete ' シート「データ」を削除
+        Call KDDI_KPIListにコピー
+    
+    Call セル結合
 
+
+    'Application.DisplayAlerts = False ' メッセージを非表示
+    'Sheets("date").Delete ' シート「データ」を削除
+    If flag = 1 Then
+        MsgBox ("エラー！" & vbCrLf & "" & vbCrLf & "KPICounterまたはCounterIDに未入力があります")
+    End If
+    
     '画面更新を有効化
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
-
-Debug.Print "end"
+    
+    Debug.Print "end"
+    
+    '終了時間取得
+    endTime = Timer
+    
+    '処理時間表示
+    processTime = endTime - startTime
+    MsgBox "処理時間：" & processTime
 
 End Sub
-'Excel VBA 区切った文字数分の行挿入して一覧を作成する
-'シートがあるかどうか調べて、ある場合はそのシートを削除
-Public Sub 空白確認()
+Public Sub KDDI_KPIListにコピー()
     Dim ws As Worksheet
-    Dim flag As Boolean
+    Dim Arrays As Variant
+
+    Dim lastRow   As Long
+    Dim kp As Worksheet
+    
+    Set kp = ThisWorkbook.Worksheets("KDDI_KPIList")
     
     With Worksheets("date")
         lastRow = .Cells(Rows.COUNT, 17).End(xlUp).Row
-        Debug.Print lastRow
+        Arrays = .Range(.Cells(1, 1), .Cells(lastRow, 17)).Value
+    End With
+    
+    kp.Range(kp.Cells(2, 1), kp.Cells(lastRow + 1, 17)).Value = Arrays
+    
+    
+End Sub
+Function Function_空白確認() As Long
+    Dim ws As Worksheet
+    Dim Arrays As Variant
+    Dim i As Long
+    Dim j As Long
+    
+    Dim flag As Long
+    'Counter List最終行
+    Dim lastRow   As Long
+    
+    With Worksheets("date")
+        lastRow = .Cells(Rows.COUNT, 17).End(xlUp).Row
         Arrays = .Range(.Cells(1, 17), .Cells(lastRow, 17)).Value
         For i = LBound(Arrays, 1) To UBound(Arrays, 1)
-                If Arrays(i, 1) = "" Then
-                    Debug.Print "6"
-                    Arrays(i, 1) = "?"
-                End If
+            If Arrays(i, 1) = "" Then
+                Debug.Print "6"
+                Arrays(i, 1) = "?"
+            End If
         Next i
-    .Range(.Cells(1, 17), .Cells(COUNT, 17)) = Arrays
+    .Range(.Cells(1, 17), .Cells(lastRow, 17)) = Arrays
+    .Range(.Cells(1, 18), .Cells(lastRow, 18)) = Arrays
+    
     End With
-End Sub
 
-
+    Function_空白確認 = flag
+End Function
+'Sub セル結合()
+'    Dim Arrays As Variant
+'    Dim i As Long, j As Long
+'    'Counter List最終行
+'    Dim lastRow   As Long
+'    Application.ScreenUpdating = False
+'    Application.Calculation = xlCalculationManual
+'
+'    With Worksheets("date")
+'        lastRow = .Cells(Rows.COUNT, 15).End(xlUp).Row
+'        Arrays = .Range(.Cells(1, 1), .Cells(lastRow, 15)).Value
+'
+'        For i = LBound(Arrays, 1) To UBound(Arrays, 1)
+'            For j = LBound(Arrays, 2) To UBound(Arrays, 2)
+'                If Arrays(i, j) = "" Then
+'                    .Range(.Cells(i - 1, j), .Cells(i, j)).Merge
+'                    'Arrays(i, j) = .Range(.Cells(i - 1, j), .Cells(i, j)).Merge
+'                End If
+'            Next j
+'        Next i
+'            '.Range(.Cells(1, 15), .Cells(lastRow, 15)) = Arrays
+'    End With
+'
+'
+'    Application.ScreenUpdating = True
+'    Application.Calculation = xlCalculationAutomatic
+'End Sub
 
 Sub セル結合()
     Dim Arrays As Variant
@@ -92,25 +164,25 @@ Sub セル結合()
     Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
     
-    With Worksheets("date")
-        lastRow = .Cells(Rows.COUNT, 15).End(xlUp).Row
-        Debug.Print lastRow
-        Arrays = .Range(.Cells(1, 1), .Cells(lastRow, 15)).Value
+    With Worksheets("KDDI_KPIList")
+        lastRow = .Cells(Rows.COUNT, 17).End(xlUp).Row
+        Arrays = .Range(.Cells(1, 1), .Cells(lastRow, 17)).Value
         
         For i = LBound(Arrays, 1) To UBound(Arrays, 1)
             For j = LBound(Arrays, 2) To UBound(Arrays, 2)
-                'Debug.Print "5"
                 If Arrays(i, j) = "" Then
-                    'Debug.Print "6"
                     .Range(.Cells(i - 1, j), .Cells(i, j)).Merge
+                    
                 End If
             Next j
         Next i
+           
     End With
+    
+    
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
 End Sub
-
 Public Sub 検索と行挿入()
     'ワークシート用変数
      Dim clWs     As Worksheet
@@ -186,7 +258,6 @@ Public Sub 検索と行挿入()
                      n = n + 1
                  End If
              Next
-             
          Next i
      End With
      
@@ -220,7 +291,6 @@ Public Sub 重複データ削除()
     Set myDic = Nothing
 
 End Sub
-
 'データ置換
 Public Sub データ置換(Lost_Row As Long)
     Dim da As Worksheet
@@ -272,7 +342,6 @@ Public Sub データ置換(Lost_Row As Long)
     With kara
         .Global = True
         .Pattern = "^\n+|\n+$|\n+(?=\n)"
-        'VBA100_16_02 = .Replace(Replace(arg, vbCrLf, vbLf), "")
     End With
     
     'MR_を含む列を全て削除
@@ -383,37 +452,20 @@ Public Sub Delete_sheet()
 End Sub
 'O列の幅を調整
 Public Sub 幅を調整()
-    With Worksheets("date").Columns("O")
+    With Worksheets("KDDI_KPIList").Columns("O")
         .EntireColumn.ColumnWidth = 40
     End With
     
-    With Worksheets("date").Columns("P")
+    With Worksheets("KDDI_KPIList").Columns("P")
         .AutoFit
     End With
 
-    With Worksheets("date").Columns("Q")
+    With Worksheets("KDDI_KPIList").Columns("Q")
         .AutoFit
     End With
     
 End Sub
-'空白行を削除し詰める
-Public Sub CommandButton1_Click()
-    Dim i As Long
-    Dim toprow As Long
-    Dim bottomrow As Long
-    
-    '開始する行
-    toprow = 8
-    '終了する行
-    bottomrow = 30
-    
-    For i = bottomrow To toprow Step -1
-        If ActiveSheet.Cells(i, 1) = "" Then
-            'A列が空白なら行削除
-            Application.Rows(i).Delete
-        End If
-    Next
-End Sub
+
 
 Public Sub 小文字を大文字に置換()
     Dim da As Worksheet
@@ -432,7 +484,6 @@ Public Sub 小文字を大文字に置換()
     Next
 End Sub
 
-
 Public Sub 列を削除する()
     Dim da As Worksheet
     Set da = ThisWorkbook.Worksheets("date")
@@ -440,6 +491,5 @@ Public Sub 列を削除する()
     da.Range("P:P").Delete
     
 End Sub
-
 
 
