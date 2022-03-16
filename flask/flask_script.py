@@ -2,26 +2,28 @@
 from flask import *
 from flask import Flask
 
-#分割ファイルをメインで使用する為に記載
-#記載例　from Pythonファイルメイ import モジュール名
-from ok import ok_module
-from ng import ng_module
-
 import pymysql
+#アプリを分割するライブラリ
+from flask import Blueprint
 
 # render_templateを使用するために記載
 from flask import Flask, render_template #追加
 #flask_bootstrapの使用
 from flask_bootstrap import Bootstrap
 
-
-
 #データベースをSQLAlchemyで操作するために必要
 from sqlalchemy import create_engine, Column, String, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+#分割ファイルをメインで使用する為に記載
+#記載例　from Pythonファイルメイ import モジュール名
+from ok import ok_module
 
+from sake import sake_module
+from wine import wine_module
+from Bourbon import Bourbon_module
+from Brandy import Brandy_module
 
 # アプリの設定 ・Flaskオブジェクトの生成
 app = Flask(__name__)
@@ -29,18 +31,24 @@ bootstrap = Bootstrap(app)
 
 ##以下をモジュールとして定義しアプリケーションに認識
 app.register_blueprint(ok_module)
-app.register_blueprint(ng_module)
+
+#日本酒
+app.register_blueprint(sake_module)
+#ワイン
+app.register_blueprint(wine_module)
+#バーボン
+app.register_blueprint(Bourbon_module)
+#ブランデー
+app.register_blueprint(Brandy_module)
 
 # どのページで実行する関数か設定
 @app.route("/01")
-#メイン関数
+#メイン関数(サンプルコード)
 def main():
     name = "Flask"
     players = ["111","555","777"]
-    
     #templateのデータを渡すためにrender_templateの引数として記述[ name_value = name]
     return render_template("index.html",name_value = name,players = players)
-
 
 @app.route("/")
 def show():
@@ -79,38 +87,6 @@ def api_books():
 #     return render_template("index.html")
 
 
-@app.route("/555")
-def aa5():
-    name = "私は田村弘忠です。"
-    return render_template("index.html", name_value = name)
-
-@app.route("/222")
-def test():
-   #変数定義
-    return render_template("right.html")
-
-
-@app.route("/444")
-def header():
-    #変数定義
-    return render_template("header.html")
-
-@app.route("/04")
-def hogehoge():
-       #変数定義
-     return render_template("test.html")
-
-
-# @app.route("/05")
-# def sake_type():
-#        #変数定義
-#      return render_template("Sake_type.html")
-
-
-@app.route('/bootstrap')
-def bootstrap():
-    return render_template('bootstrap.html')
-
 
 #データベースコントロール
 # connection = pymysql.connect(
@@ -132,9 +108,6 @@ def bootstrap():
 
 # for player in players:
 #     print(player["name"])
-
-
-
 
 
 
