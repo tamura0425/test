@@ -1,0 +1,339 @@
+--- --------------------------------------------------------------------
+### 事前準備
+-----------------------------------------------------------------------
+
+アップデートファイル確認
+apt update
+データアップデート
+apt -y full-upgrade
+
+-yフラグは、すべてのアイテムがインストールされることに同意することを確認しますが、Linuxのバージョンによっては、システムを更新・アップグレード中に追加で同意を求められるかもしれません。
+
+
+Python 3のバージョンを確認
+python3 -V
+
+Pythinのバージョン管理ツール【pip】をいれる。
+sudo apt install -y python3-pip
+
+### NumPyをインストールする
+package_nameは、Web開発用のDjangoや科学計算用のNumPyなど、
+任意のPythonパッケージまたはライブラリを参照できます。
+
+pip3 install numpy 
+
+プログラミング環境の堅牢なセットアップを確保するために、インストールするパッケージと開発ツールがいくつかあります。
+
+sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
+
+
+-----------------------------------------------------------------------
+##### ステップ2 —仮想環境のセットアップ
+-----------------------------------------------------------------------
+
+仮想環境を使用すると、Pythonプロジェクト用にサーバー上に隔離されたスペースが確保できます。
+これにより、各プロジェクトが、他のプロジェクトを中断させない独自の依存関係を持つことができます。
+
+プログラミング環境をセットアップすると、Pythonプロジェクトやパッケージのさまざまなバージョンの処理方法をより詳細に制御できます。これは、サードパーティのパッケージを使用する場合に特に重要です。
+
+必要な数のPythonプログラミング環境がセットアップできます。各環境は基本的に、サーバーを環境として機能させるためのいくつかのスクリプトを含むサーバー上のディレクトリまたはフォルダーです。
+
+Pythonでプログラミング環境を構築する方法はいくつかありますが、ここでは、標準のPython 3ライブラリの一部であるvenvモジュールを使用します。次を入力してvenvをインストールしましょう。
+
+sudo apt install -y python3-venv
+
+-----------------------------------------------------------------------
+## flask インストール##
+-----------------------------------------------------------------------
+Flask インストール
+pip3 install flask
+
+-----------------------------------------------------------------------
+## Apache2とApacheでPython3を使えるようにするmodのインストール##
+-----------------------------------------------------------------------
+##apache2のインストール
+sudo apt install apache2
+
+##apache2のバージョン確認
+apache2 -v
+
+.apache2の状態確認
+sudo systemctl status apache2
+
+.apacheの稼動を確認、IPアドレスを取得
+sudo apache2ctl configtest
+
+
+-----------------------------------------------------------------------
+##  mod_wsgiのインストール
+
+-----------------------------------------------------------------------
+
+mod_wsgi(ウィズギー)は、PythonフレームワークとApache2を連携させるためのインターフェースモジュール。
+wsgi無しでは、PythonをWebサーバーと連携できないので、インストールが必要。
+※一応cgiを使うという手もある
+
+sudo apt-get -y install libapache2-mod-wsgi
+sudo apt install libapache2-mod-wsgi-py3  
+
+-----------------------------------------------------------------------
+##ファイル構成
+-----------------------------------------------------------------------
+
+root@Ubuntu:/var/www$ tree -l 
+.                               
+└── flask                    
+    ├── flask_script.py    
+    └── flask_app.wsgi           
+                             
+1 directories, 2 files        
+
+
+-----------------------------------------------------------------------
+##flaskアプリケーションの作成
+-----------------------------------------------------------------------
+ファイル名
+##flask_script.py
+
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+-----------------------------------------------------------------------
+## .wsgiファイルの作成
+-----------------------------------------------------------------------
+#flask_app.wsgi
+
+
+import os,sys
+
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+from flask_script import app as application
+
+
+-----------------------------------------------------------------------
+##### Apacheの設定
+-----------------------------------------------------------------------
+
+sudo vim /etc/apache2/sites-available/flask.conf
+
+-----------------------------------------------------------------------
+##Flaskの設定ファイルつくる
+-----------------------------------------------------------------------
+flask.conf
+<VirtualHost *:80>
+    ServerName localhost
+
+    WSGIDaemonProcess flask_app user=www-data group=www-data threads=5
+    WSGIScriptAlias / /var/www/flask/flask_app.wsgi
+
+    <Directory /var/www/flask>
+        WSGIProcessGroup flask_app
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+
+
+プリケーションのディレクトリ以下が、www-dataがオーナーになるように所有者を変えておく。
+sudo chown -R www-data:www-data /var/www/flask/
+
+Apacheに読み込んでもらうために、シンボリックリンクを作成する。
+sudo ln -s /etc/apache2/sites-available/flask.conf /etc/apache2/sites-enabled/flask.conf  
+
+ # デフォルトの設定ファイルを読み込まれないようにする
+sudo rm /etc/apache2/sites-enabled/000-default.conf  
+
+Apacheを再起動
+
+sudo apachectl restart
+
+
+もし、再起動の時に
+
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using localhost Set the 'ServerName' directive globally to suppress this message
+
+というエラーが発生したら、以下を打ち込んで、もう一度再起動する
+
+sudo echo ServerName $HOSTNAME > /etc/apache2/conf-available/fqdn.conf
+sudo a2enconf fqdn
+
+
+$ sudo apachectl restart
+エラーが出なかったら、
+http://localhost
+にアクセスしてみてHello World!
+
+と表示されれば成功
+
+-----------------------------------------------------------------------
+##共通テンプレートJinja2を利用する
+-----------------------------------------------------------------------
+Flaskには標準でJinja2というテンプレートエンジンが付いているので使ってみます。
+templatesというフォルダを作る。そこに、htmlを置きます。
+
+
+※インストールされていない場合は以下コマンド実行
+sudo pip3 install Jinja2
+
+
+
+-----------------------------------------------------------------------
+##Jinja2の動作確認
+-----------------------------------------------------------------------
+
+from jinja2 import Template
+ 
+template = Template('このサンプルコードは、 {{ title }}用です。')
+result = template.render(title='Jinja2の動作確認')
+ 
+print(result)
+
+
+
+-----------------------------------------------------------------------
+##MySQL8.0以降で接続できない場合は「認証プラグイン」を変更する
+------------------------------------------------------------------------
+1. ユーザーの認証方式の変更
+
+ユーザーの認証方式を旧式の「mysql_native_password」に変更する。
+ALTER USER 'ユーザー名'@'localhost' IDENTIFIED WITH mysql_native_password BY 'パスワード';
+
+ALTER USER 'hiro'@'localhost' IDENTIFIED WITH mysql_native_password BY 'hirotada';
+
+変更の確認をする。
+
+SELECT user, host, plugin FROM mysql.user;
+
+
+
+-----------------------------------------------------------------------
+##データベースをSQLAlchemy
+------------------------------------------------------------------------
+pip3 install sqlalchemy
+Python用のSQLAlchemyというライブラリをインストール。
+
+
+
+
+-----------------------------------------------------------------------
+flask_bootstrapのインストール方法
+------------------------------------------------------------------------
+pip3 install flask_bootstrap
+
+使用方法
+
+# 必要なライブラリのインポート
+from flask import *
+
+# render_templateを使用するために記載
+from flask import Flask, render_template #追加
+
+#flask_bootstrapの使用　※　以下を追記
+from flask_bootstrap import Bootstrap
+
+# アプリの設定 ・Flaskオブジェクトの生成
+app = Flask(__name__)
+
+#flask_bootstrapの使用　※　以下を追記
+bootstrap = Bootstrap(app)
+
+# どのディレクトリ階層で実行する関数か設定
+@app.route('/')
+#関数名
+def hello_world():
+	#実行内容 Hello, World! を出力
+    return "Hello, World!"
+
+# おまじない
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=8888, threaded=True)
+
+
+
+※render_template
+htmlファイルを動的に返す。
+htmlファイルを表示しhtmlファイルに値を引数として渡す。
+
+def main():
+	#name変数に【Flask】の文字列を代入
+    name = "Flask"
+    
+    #players配列に「111」「555」「777」3種類の文字列を代入
+    players = ["111","555","777"]
+    
+    #index.htmlファイルのname_value変数にname変数の値を代入
+    #index.htmlファイルのplayers変数にplayersの値を代入
+    return render_template("index.html",name_value = name,players = players)
+
+
+
+-----------------------------------------------------------------------
+CSS、JSファイルを読み込む
+------------------------------------------------------------------------
+staticディレクトリの中に[CSS]ディレクトリと[js]ディレクトリを作成
+
+┣ static/
+┃ ┣ css/
+┃ ┗ js/
+
+-----------------------------------------------------------------------
+##完成版フォルダー構成
+------------------------------------------------------------------------
+
+
+├── __pycache__
+│   └── flask_script.cpython-38.pyc
+├── flask_app.wsgi
+├── flask_script.py
+├── static
+│   ├── css
+│   │   └── index.css
+│   ├── images
+│   │   └── index.jpeg
+│   └── js
+│       └── script.js
+└── templates
+    ├── index.html
+    ├── layout.html
+    └── bootstrap.html
+
+-----------------------------------------------------------------------
+##参考サイト
+------------------------------------------------------------------------
+UbuntuのApacheでFlaskを用いてPython3でWebアプリケーションを作る
+https://blog.akashisn.info/entry/%3Fp%3D258
+
+Python 3をインストールしUbuntu 20.04サーバーにプログラミング環境を設定する方法
+https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-20-04-server-ja
+
+Ubuntu 16.04 で Flask アプリケーションを動かすまでにやることまとめ
+https://qiita.com/hoto17296/items/845850c8854dd18f6fff
+
+Ubuntu環境でApache WSGI flaskなWebアプリケーションを構築する
+https://lifeinprogram.com/2019/08/18/post-992/
+
+Flaskの簡単な使い方
+https://qiita.com/zaburo/items/5091041a5afb2a7dffc8
+
+はじめての Flask #1 ~はじめてのウェブアプリ~
+https://qiita.com/nagataaaas/items/d249c3905d41137cd510
+
+はじめての Flask #2 ~POSTを受け取ろう~
+https://qiita.com/nagataaaas/items/3116352da186df102d96
+
+はじめての Flask #3 ~htmlをrenderしてみよう~
+https://qiita.com/nagataaaas/items/4662237cfb7b92f0f839
+
+はじめての Flask #4 ~データベースをSQLAlchemyでいじってみよう~
+https://qiita.com/nagataaaas/items/5c7c9ec4813fea85c40c
+
+はじめての Flask #5 ~JSONを返すWebAPIを書こう~
+https://qiita.com/nagataaaas/items/24e68a9c736aec31948e
