@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>フォーム</h1>
+<p>{{ message }}</p>
+<form action="/result" method="get">
+    <label for="article">投稿</label>
+    <input type="text" name="article">
+    <p></p>
+    <label for="name">名前</label>
+    <input type="text" name="name">
+    <button type="submit">送信する</button>
+</form>
+<p>{{ article }} {{ name }}</p>
+{% endblock %}

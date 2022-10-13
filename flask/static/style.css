@@ -1,0 +1,54 @@
+@import url("sanitize.css");
+@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c');
+
+* {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+.content {
+    width: 600px;
+    border: 1px solid #d1d1d1;
+    margin: 15px auto;
+    padding: 20 30 30px;
+    background-color:#fff;
+}
+
+header {
+    text-align:center;
+    color: #666;
+}
+
+input {
+    display: block;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid #666;
+    width: 30%;
+    font-size: 1.5em;
+    padding: 8px;
+    margin-left: 210px;
+    margin-top: 20px;
+}
+
+.control {
+    margin-bottom: 15px;
+    text-align: center
+}
+
+button {
+    color:#fff;
+    background-color: #1da1f2;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .3);
+    width: 30%;
+}
+
+button:hover {
+    color: #1da1f2;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .3);
+    width: 30%;
+}

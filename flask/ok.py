@@ -25,10 +25,10 @@ def a2():
    #変数定義
     return render_template("right.html")
 
-@ok_module.route("/3")
-def sake_type():
-       #変数定義
-     return render_template("Sake_type.html")
+# @ok_module.route("/3")
+# def sake_type():
+    #変数定義
+    # return render_template("Sake_type.html")
 
 # @ok_module.route("/05")
 # def sake_type():
@@ -36,23 +36,22 @@ def sake_type():
 #      return render_template("Sake_type.html")
 #script.js
 
-@ok_module.route("/js/1")
-def jstest1():
-       #変数定義
-     return render_template("55test.html")
+# @ok_module.route("/js/1")
+# def jstest1():
+    #変数定義
+    # return render_template("55test.html")
 
-@ok_module.route("/js/2")
-def jstest2():
-       #変数定義
-     return render_template("test.html")
-
-
-
-@ok_module.route('/bootstrap')
-def bootstrap():
-    return render_template('bootstrap.html')
+# @ok_module.route("/js/2")
+# def jstest2():
+    #変数定義
+    # return render_template("test.html")
 
 
+
+# @ok_module.route('/bootstrap')
+# def bootstrap():
+#     return render_template('bootstrap.html')
+#
 @ok_module.route('/test1')
 def mein_test1():
     return render_template('/test/company.html')
@@ -60,3 +59,29 @@ def mein_test1():
 @ok_module.route('/test2')
 def mein_test2():
     return render_template('/test/index.html')
+
+@ok_module.route('/test3')
+def mein_test3():
+    return render_template('/test/layout1.html')
+
+@ok_module.route('/test4')
+def mein_test4():
+    return render_template('/sake/sake.html')
+
+
+@ok_module.route('/test/layout_2')
+def mein_Cocktail():
+    return render_template('/test/layout_2.html')
+
+
+
+@ok_module.route('/test5')
+def mein_test5():
+    return render_template('/test/layout_2.html')
+
+
+
+
+@ok_module.route('/test6')
+def mein_test6():
+    return render_template('/html/view_001.html')

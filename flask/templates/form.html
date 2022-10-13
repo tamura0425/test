@@ -1,14 +1,17 @@
-{% extends "layout.html" %}
-{% block content %}
-<h1>フォーム</h1>
-<p>{{ message }}</p>
-<form action="/result" method="get">
-    <label for="article">投稿</label>
-    <input type="text" name="article">
-    <p></p>
-    <label for="name">名前</label>
-    <input type="text" name="name">
-    <button type="submit">送信する</button>
-</form>
-<p>{{ article }} {{ name }}</p>
+{% extends "/test/layout1.html" %}
+{% block  test11 %}
+
+    <div class="content">
+            <h1>あなたが生まれて〇〇日</h1>
+        <form action="/calc" method="POST">
+            <div class="control">
+                <label for="birth">生年月日(例.〇〇/〇〇/〇〇)</label>
+                <input type="text" id="birth" name="birth">
+            </div>
+            <div class="control">
+                <button type="submit">計算する</button>
+            </div>
+        </form>
+    </div>
+
 {% endblock %}
