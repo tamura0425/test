@@ -9,7 +9,11 @@ public class Main {
         System.out.println("Hello world!6");
         System.out.println("Hello world!7");
         System.out.println("Hello world!8");
-        System.out.println("Hello world!8");
-        System.out.println("Hello world!8");
+        System.out.println("Hello world!9");
+        System.out.println("Hello world!10");
+        System.out.println("Hello world!11");
+        System.out.println("Hello world!12");
+        System.out.println("Hello world!13");
+
     }
 }
