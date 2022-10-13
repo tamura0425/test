@@ -16,7 +16,7 @@ $(function(){
 
 //トップへ戻るボタン
 $(function() {
-  var topBtn = $('#to_top');   
+  var topBtn = $('#to_top');
   topBtn.hide();
   //スクロールが100に達したらボタン表示
   $(window).scroll(function () {

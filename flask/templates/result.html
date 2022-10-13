@@ -1,0 +1,14 @@
+{% extends "/test/layout1.html" %}
+{% block  test11 %}
+    <div class="content">
+            <h1>あなたが生まれて{{ days }}日たちました</h1>
+
+        <div class="control">
+            {% if days > 7000 %}
+            <p>両親、友人、普段意識することのない人たちによってここまで生かされてここまで生きて来れました</p>
+            {% else %}
+            <p>この日数を見て何を感じましたか？</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

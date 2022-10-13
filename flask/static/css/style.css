@@ -1,14 +1,3 @@
-/*
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-原則として、許可なしの再配布は禁止させていただきます。
-また、無料でお使いになる場合は、【ＰＲ枠】のリンクは全て削除禁止です。
-（※加工後の削除も禁止させていただいておりますのでご了承ください。）
-PR枠の削除（有料プラン）に関するお問い合わせや、その他ご不明な点は、
-http://www.s-hoshino.com/info.html、または、
-https://www.megapx.com/contact.htmlのフォームよりお問い合わせください。
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-*/
-
 @charset "utf-8";
 
 * {
@@ -1332,7 +1321,7 @@ header h1 {
 .close_btn {
 	display: none;
 }
-
+/* 
 header .h_box {
 	position: absolute;
 	top: 10px;
@@ -1340,7 +1329,7 @@ header .h_box {
 	z-index: 1000;
 	width: 640px;
 	padding-left: 10px;
-}
+} */
 
 header .h_btn {
 	position: absolute;
@@ -1587,6 +1576,7 @@ header #h_box_sp {
 	top: 0px;
 	left: 0px;
 	overflow: auto;
+	/* z-index: 4000; */
 	z-index: 4000;
 	background-color: #00365E;
 	background-color: rgba(0,15,44,1.0);
@@ -1627,13 +1617,13 @@ header .h_btn a::after {
 	line-height: 36px;
 }
 
-
+/* 
 header .h_box .h_list li a {
 	font-size: 12px;
 	padding-left: 10px;
 	padding-right: 10px;
 	margin-top: 10px;
-}
+} */
 
 header .h_box ul.h_lang {
 	margin-top: 10px;

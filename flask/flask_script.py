@@ -1,9 +1,16 @@
 # 必要なライブラリのインポート
 from flask import *
 from flask import Flask
+from flask import request
+from days_from_birth import calc
+
+import cgi
+import cgitb
+
+cgitb.enable(display=0, logdir="/var/log/apache2")
 
 import pymysql
-#アプリを分割するライブラリ
+#アプリを分割するライブラリ 
 from flask import Blueprint
 
 # render_templateを使用するために記載
@@ -50,10 +57,10 @@ def main():
     #templateのデータを渡すためにrender_templateの引数として記述[ name_value = name]
     return render_template("index.html",name_value = name,players = players)
 
-@app.route("/")
-def show():
-    message = "Hello World"
-    return render_template("form.html", message = message)
+# @app.route("/")
+# def show():
+#     message = "Hello World"
+#     return render_template("form.html", message = message)
 
 @app.route("/result", methods=["GET", "POST"])
 def result():
@@ -108,6 +115,17 @@ def api_books():
 
 # for player in players:
 #     print(player["name"])
+
+
+@app.route("/calc", methods=["POST", "GET"])
+def index():
+    if request.method == "POST":
+        birth_date = request.form["birth"]
+        days = calc(birth_date)
+        return render_template("result.html", days=days)
+    else:
+        return render_template("form.html")
+
 
 
 
