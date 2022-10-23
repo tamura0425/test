@@ -26,3 +26,5 @@ function sum(x: number): string {
 }
 
 console.log(sum(1000)); // "1,000円"
+
+console.log('Hello TypeScript');
