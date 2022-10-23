@@ -14,3 +14,7 @@ var Test2 = /** @class */ (function () {
     return Test2;
 }());
 new Test2("55555555");
+function sum(x) {
+    return x.toLocaleString() + '円';
+}
+console.log(sum(1000)); // "1,000円"
