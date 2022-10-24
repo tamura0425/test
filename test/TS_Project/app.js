@@ -18,3 +18,7 @@ function sum(x) {
     return x.toLocaleString() + '円';
 }
 console.log(sum(1000)); // "1,000円"
+console.log('Hello TypeScript');
+var flag = false;
+var text = flag ? "flagはtrueです" : "flagはfalseです";
+console.log(text);

@@ -28,3 +28,9 @@ function sum(x: number): string {
 console.log(sum(1000)); // "1,000円"
 
 console.log('Hello TypeScript');
+
+
+
+const flag = false;
+const text = flag ? "flagはtrueです" : "flagはfalseです";
+console.log(text);
