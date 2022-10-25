@@ -22,3 +22,15 @@ console.log('Hello TypeScript');
 var flag = false;
 var text = flag ? "flagはtrueです" : "flagはfalseです";
 console.log(text);
+var Person = /** @class */ (function () {
+    function Person(initName) {
+        this.name = initName;
+    }
+    return Person;
+}());
+var quill = new Person('quill');
+console.log(quill);
+function increment(num) {
+    return num + 1;
+}
+console.log(increment(999));
